@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {marked} from 'marked';
+import {ui,languages,sections,type Lang} from '../data/ui';
+import {lessons} from '../data/lessons';
+import {posts,projects} from '../data/extras';
+export function getStaticPaths(){
+ const out=[];
+ for(const lang of languages){
+  const routes=['',...sections,'search',...Array.from({length:7},(_,i)=>`wiki/topic-${i+1}`),...lessons(lang).flatMap(l=>[`wiki/${l.id}`,`practice/${l.id}`]),...posts(lang).map(p=>`blog/${p.id}`)];
+  for(const route of routes)out.push({params:{path:`${lang}${route?'/'+route:''}`},props:{lang,route}});
+ }
+ return out;
+}
+const {lang,route}=Astro.props as {lang:Lang,route:string};
+const t=ui[lang],all=lessons(lang),articles=posts(lang);
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const href=(p='')=>`${base}/${lang}/${p}${p?'/':''}`;
+const [section,id]=route.split('/');
+const lesson=all.find(l=>l.id===id),post=articles.find(p=>p.id===id);
+const topic=id?.startsWith('topic-')?Number(id.slice(6))-1:undefined;
+const title=lesson?(section==='practice'?`${t.task}: ${lesson.title}`:lesson.title):post?post.title:topic!==undefined?t.topics[topic]:section==='route'?t.routeTitle:section==='projects'?t.projectsTitle:section==='about'?t.aboutTitle:section==='search'?t.searchLabel:section?t.nav[sections.indexOf(section)]:t.subtitle;
+const description=lesson?.goal||post?.intro||t.intro;
+const reading=lang==='ru'?['М. Розенберг — «Ненасильственное общение» (для совместного чтения со взрослым).','Аристотель — «Риторика» (отдельные фрагменты с пояснениями наставника).','Р. Фишер, У. Юри, Б. Паттон — Getting to Yes (идеи об интересах и вариантах решения).']:lang==='en'?['Marshall Rosenberg — Nonviolent Communication (read with an adult).','Aristotle — Rhetoric (selected passages with a mentor).','Roger Fisher, William Ury, Bruce Patton — Getting to Yes (interests and possible solutions).']:['Marshall Rosenberg — Nenásilná komunikace (společná četba s dospělým).','Aristotelés — Rétorika (vybrané části s vysvětlením průvodce).','Roger Fisher, William Ury, Bruce Patton — Getting to Yes (zájmy a možné dohody).'];
+const cards=topic===undefined?all:all.filter(l=>l.topic===topic);
+---
+<Layout lang={lang} title={title} route={route} description={description}>
+{!route ? <>
+<section class="hero"><div><div class="eyebrow">{t.eyebrow}</div><h1>{t.title}</h1><p class="intro">{t.intro}</p><div class="actions"><a class="button primary" href={href('wiki/facts')}>{t.start} →</a><a class="button" href={href('wiki')}>{t.explore}</a></div></div>
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 560 450" xmlns="http://www.w3.org/2000/svg"><ellipse class="orbit" cx="290" cy="235" rx="225" ry="195"/><ellipse cx="284" cy="385" rx="192" ry="17" fill="#174d4520"/><path d="M110 335h350v35H110z" fill="#b3774f"/><rect x="129" y="287" width="105" height="24" rx="6" fill="#e5bf82" transform="rotate(-9 129 287)"/><rect x="131" y="311" width="107" height="23" rx="5" fill="#33877b"/><path d="M238 325q-18-81 19-113l-8-84 49 34 49-31-5 83q47 40 23 111" fill="#edc98e" stroke="#4c4942" stroke-width="3"/><path d="m261 152 20 18-18 7m62-8 15-17-1 24" fill="#c98771"/><path d="M280 201h3m39 0h3" stroke="#313d3b" stroke-width="7" stroke-linecap="round"/><path d="m297 215 8 0-4 6zm-8 12q12 10 23-1" fill="none" stroke="#313d3b" stroke-width="3" stroke-linecap="round"/><path d="m266 215-31-4m31 14-28 5m97-15 28-5m-28 14 30 5" stroke="#826547" stroke-width="2"/><path d="m248 287 45 21 57-19 25 47H232z" fill="#146b65"/><path d="m292 309 2 27m-51-44 49 17 56-21" fill="none" stroke="#7bb7a5" stroke-width="3"/><ellipse cx="258" cy="286" rx="17" ry="12" fill="#edc98e"/><ellipse cx="339" cy="284" rx="17" ry="12" fill="#edc98e"/><g transform="rotate(9 430 140)"><rect class="paper" x="378" y="95" width="112" height="135" rx="12"/><path d="M396 124h73m-73 18h55m-55 18h67m-67 18h42" stroke="#7a9b90" stroke-width="3" stroke-linecap="round"/></g><g transform="rotate(-12 135 155)"><rect class="paper" x="78" y="104" width="105" height="87" rx="14"/><path d="m102 133 15 14 29-29" stroke="#33877b" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g><path d="m370 47 5 13 14 2-11 9 3 14-12-7-12 7 3-14-11-9 15-2z" fill="#d4ac62"/><circle cx="178" cy="71" r="7" fill="#33877b"/><path d="M432 290v-25q0-18 19-18h9" stroke="#33877b" stroke-width="9" fill="none"/><rect x="400" y="283" width="55" height="51" rx="10" fill="#d38b67"/><path d="M452 292h12q16 18-9 27" stroke="#d38b67" stroke-width="8" fill="none"/></svg>
+<span class="label">{t.level}</span></div></section>
+<div class="weekly"><span class="eyebrow">{t.weekly}</span><div><h3>{t.weekTitle}</h3><p>{t.weekText}</p></div><a class="button" href={href('practice/listen')}>{t.try} ↗</a></div>
+<section class="block"><div class="section-heading"><div><h2>{t.directions}</h2><p>{t.directionsText}</p></div></div><div class="grid topics">{t.topics.map((name,i)=><a class="card" href={href(`wiki/topic-${i+1}`)}><span class="number">0{i+1} /</span><h3>{name}</h3><p>{t.topicDescriptions[i]}</p><span class="meta">{t.explore} ↗</span></a>)}</div></section>
+<section class="block"><div class="section-heading"><h2>{t.latest}</h2><a class="small-link" href={href('wiki')}>{t.all} →</a></div><div class="grid">{all.slice(0,3).map(l=><a class="card" href={href('wiki/'+l.id)}><span class="number">{t.lesson} {String(l.number).padStart(2,'0')}</span><h3>{l.title}</h3><p>{l.goal}</p><span class="meta">{t.topics[l.topic]} · {l.time} {t.minutes}</span></a>)}</div></section>
+<section class="block"><div class="route-banner"><div><h2>{t.path}</h2><p>{t.pathText}</p></div><a class="button" href={href('route')}>{t.pathLink} →</a></div></section>
+<section class="block"><div class="section-heading"><div><h2>{t.blogTitle}</h2><p>{t.blogIntro}</p></div></div><div class="grid">{articles.map(p=><a class="card" href={href('blog/'+p.id)}><span class="number">{p.tag}</span><h3>{p.title}</h3><p>{p.intro}</p><span class="meta">{t.sample} · {t.read} ↗</span></a>)}</div></section>
+</> : <>
+<div class="page-head"><div class="breadcrumb"><a href={href()}>{t.name}</a> / {section&&<a href={href(section)}>{sections.includes(section)?t.nav[sections.indexOf(section)]:t.searchLabel}</a>}{id&&<> / {lesson?.number||post?.tag||t.topics[topic!]}</>}</div><div class="eyebrow">{lesson?`${t.lesson} ${String(lesson.number).padStart(2,'0')} · ${lesson.time} ${t.minutes}`:post?t.sample:t.subtitle}</div><h1>{title}</h1><p>{lesson?lesson.goal:post?post.intro:section==='route'?t.routeIntro:section==='projects'?t.projectsIntro:section==='blog'?t.blogIntro:section==='about'?t.aboutText:section==='practice'?t.task:t.directionsText}</p></div>
+{lesson&&<div class="article-layout"><article class="prose">
+{section==='wiki'?<><div class="callout"><h2 id="goal">{t.goal}</h2><p>{lesson.goal}</p></div><h2 id="explain">{t.explain}</h2><div set:html={marked.parse(lesson.body)} /><h2 id="example">{t.example}</h2><div set:html={marked.parse(lesson.example)} /><div class="callout warm"><h2>{t.mistake}</h2><div set:html={marked.parse(lesson.caution)} /></div><h2 id="task">{t.task}</h2><div set:html={marked.parse(lesson.task)} /><a class="button primary" href={href('practice/'+lesson.id)}>{t.practice} →</a></>:<><h2 id="task">{t.steps}</h2><div set:html={marked.parse(lesson.task)} /><div class="callout"><h2 id="check">{t.check}</h2><div set:html={marked.parse(lesson.criteria)} /></div><h2>{t.mistake}</h2><div set:html={marked.parse(lesson.caution)} /></>}
+<h2 id="reflect">{t.reflect}</h2><div set:html={marked.parse(lesson.reflection)} />
+{section==='wiki'&&<><h2 id="sources">{t.sources}</h2><p class="source-note">{t.sourceNote}</p><ul class="source-note">{reading.map(r=><li>{r}</li>)}</ul></>}
+<div class="article-actions"><a class="button" href={href(section==='practice'?'wiki/'+lesson.id:'wiki')}>{section==='practice'?t.explore:t.back}</a><button class="print" data-print>{t.print}</button>{all[lesson.number]&&<a class="button" href={href(section+'/'+all[lesson.number].id)}>{t.next} →</a>}</div>
+</article><aside><div class="sticky"><strong>{t.lesson} {lesson.number}</strong><p>{t.topics[lesson.topic]}</p>{section==='wiki'?<><a href="#goal">{t.goal}</a><a href="#explain">{t.explain}</a><a href="#example">{t.example}</a></>:<a href="#check">{t.check}</a>}<a href="#task">{t.task}</a><a href="#reflect">{t.reflect}</a><hr/><a href={href('route')}>{t.routeTitle} →</a></div></aside></div>}
+{post&&<article class="prose standalone"><p class="notice">{t.sample} · {t.blogIntro}</p><div set:html={marked.parse(post.body.join("\n\n"))} /><h2>{t.related}</h2><a class="button" href={href('wiki/'+post.related)}>{all.find(l=>l.id===post.related)?.title} →</a><div class="article-actions"><button class="print" data-print>{t.print}</button></div></article>}
+{(section==='wiki'&&!lesson||section==='practice'&&!id)&&<>
+{section==='wiki'&&<div class="filters"><a href={href('wiki')} class={topic===undefined?'active':''}>{t.all}</a>{t.topics.map((name,i)=><a class={topic===i?'active':''} href={href(`wiki/topic-${i+1}`)}>{name}</a>)}</div>}
+{cards.length?<div class="grid">{cards.map(l=><a class="card" href={href(`${section}/${l.id}`)}><span class="number">{t.lesson} {String(l.number).padStart(2,'0')}</span><h3>{l.title}</h3><p>{section==='practice'?l.task:l.goal}</p><span class="meta">{t.topics[l.topic]} · {l.time} {t.minutes} ↗</span></a>)}</div>:<><p class="notice">{t.empty}</p><div class="grid">{all.slice(0,3).map(l=><a class="card" href={href('wiki/'+l.id)}><h3>{l.title}</h3><p>{l.goal}</p></a>)}</div></>}
+</>}
+{section==='route'&&<div class="route-list">{all.map(l=><a class="route-item" href={href('wiki/'+l.id)}><small>{t.week} {String(l.number).padStart(2,'0')}</small><div><h3>{l.title}</h3><small>{l.goal}</small></div><span>→</span></a>)}</div>}
+{section==='blog'&&!id&&<div class="grid">{articles.map(p=><a class="card" href={href('blog/'+p.id)}><span class="number">{p.tag} · {t.sample}</span><h3>{p.title}</h3><p>{p.intro}</p><span class="meta">{t.read} ↗</span></a>)}</div>}
+{section==='projects'&&<div class="grid">{projects(lang).map((p,i)=><div class="card"><span class="number">{t.brief} 0{i+1}</span><h3>{p[0]}</h3><p>{p[1]}</p><a class="small-link" href={href('wiki/'+['speech','requests','sources','fallacies'][i])}>{t.related} →</a></div>)}</div>}
+{section==='about'&&<article class="prose standalone"><ul>{t.aboutRules.map(r=><li>{r}</li>)}</ul><h2>{t.sources}</h2><ul>{reading.map(r=><li>{r}</li>)}</ul><p class="source-note">{t.sourceNote}</p></article>}
+{section==='search'&&<><input id="search-query" class="search-input" type="search" aria-label={t.searchLabel} placeholder={t.search}/><p id="search-empty" class="no-results" hidden>{t.noResults}</p><div class="grid" id="search-results">{all.map(l=><a class="card" data-search={`${l.title} ${l.goal} ${l.body} ${t.topics[l.topic]}`} href={href('wiki/'+l.id)}><span class="number">{t.lesson} {l.number}</span><h3>{l.title}</h3><p>{l.goal}</p></a>)}{articles.map(p=><a class="card" data-search={`${p.title} ${p.intro} ${p.body.join(' ')} ${p.tag}`} href={href('blog/'+p.id)}><span class="number">{t.nav[2]} · {p.tag}</span><h3>{p.title}</h3><p>{p.intro}</p></a>)}</div></>}
+</>}
+</Layout>
+<script>
+const input=document.querySelector<HTMLInputElement>('#search-query');
+if(input){
+ const normalise=(s:string)=>s.toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const update=()=>{const words=normalise(input.value.trim()).split(/\s+/).filter(Boolean);let count=0;document.querySelectorAll<HTMLElement>('[data-search]').forEach(card=>{card.hidden=!words.every(w=>normalise(card.dataset.search||'').includes(w));if(!card.hidden)count++;});document.querySelector<HTMLElement>('#search-empty')!.hidden=count>0;const url=new URL(location.href);if(input.value)url.searchParams.set('q',input.value);else url.searchParams.delete('q');history.replaceState(null,'',url);};
+ input.value=new URLSearchParams(location.search).get('q')||'';input.addEventListener('input',update);update();
+}
+</script>

@@ -1,0 +1,47 @@
+---
+import {ui,languages,sections,type Lang} from '../data/ui';
+import '../styles/global.css';
+const {lang='ru',title,route='',description}=Astro.props as {lang:Lang,title:string,route?:string,description?:string};
+const t=ui[lang];
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const href=(p='')=>`${base}/${lang}/${p}${p?'/':''}`;
+const canonical=new URL(href(route),Astro.site);
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>{title} — {t.name}</title><meta name="description" content={description||t.intro}/>
+<link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml"/>
+<link rel="canonical" href={canonical}/>
+{languages.map(l=><link rel="alternate" hreflang={l} href={new URL(`${base}/${l}/${route}${route?'/':''}`,Astro.site)}/>)}
+<script is:inline>
+try { const v=localStorage.getItem('kotik-theme')||'system'; document.documentElement.dataset.theme=v==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):v; } catch {document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">{t.skip}</a>
+<header><div class="wrap">
+<div class="topbar">
+<a class="brand" href={href()}><img src={`${base}/favicon.svg`} alt="" width="46" height="46"/><span><strong>{t.name}</strong><small>{t.subtitle}</small></span></a>
+<nav aria-label={t.explore}>{sections.map((s,i)=><a href={href(s)} aria-current={route===s||route.startsWith(s+'/')?'page':undefined}>{t.nav[i]}</a>)}</nav>
+<div class="controls">
+<select id="language" aria-label="Language / Язык / Jazyk" data-base={base} data-route={route}>{languages.map(l=><option value={l} selected={l===lang}>{{ru:'Русский',en:'English',cs:'Čeština'}[l]}</option>)}</select>
+<select id="theme" aria-label={t.theme}>{['system','light','dark'].map((v,i)=><option value={v}>{t.themes[i]}</option>)}</select>
+</div></div>
+<div class="utility"><span>{t.level}</span><form class="search" action={href('search')} role="search"><input name="q" aria-label={t.searchLabel} placeholder={t.search}/><button type="submit">{t.searchLabel} ↗</button></form></div>
+</div></header>
+<main id="main" class="wrap"><slot/></main>
+<footer><div class="wrap footer-inner"><a class="brand" href={href()}><img src={`${base}/favicon.svg`} width="38" height="38" alt=""/><span><strong>{t.name}</strong><small>{t.subtitle}</small></span></a><div><p>{t.footer}</p><p>{t.privacy}</p></div></div></footer>
+<script>
+const langSelect=document.querySelector<HTMLSelectElement>('#language');
+langSelect?.addEventListener('change',()=>{location.href=`${langSelect.dataset.base}/${langSelect.value}/${langSelect.dataset.route}${langSelect.dataset.route?'/':''}`+location.search;});
+const themeSelect=document.querySelector<HTMLSelectElement>('#theme');
+let pref='system';try{pref=localStorage.getItem('kotik-theme')||'system';}catch{}
+if(themeSelect)themeSelect.value=pref;
+const apply=()=>{document.documentElement.dataset.theme=pref==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):pref;};
+themeSelect?.addEventListener('change',()=>{pref=themeSelect.value;try{localStorage.setItem('kotik-theme',pref);}catch{}apply();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',apply);
+document.querySelector('[data-print]')?.addEventListener('click',()=>window.print());
+</script>
+</body></html>
