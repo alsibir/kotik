@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import ShssComic from '../../../components/ShssComic.astro';
 import {marked} from 'marked';
 import {languages,type Lang} from '../../../data/ui';
-import lesson05 from '../../../content/shss/ru/lesson-05.md?raw';
+const sourceFiles=import.meta.glob('../../../content/shss/ru/lesson-*.md',{query:'?raw',import:'default',eager:true}) as Record<string,string>;
 
 type Part='text'|'comic'|'test';
 type PathEntry={params:{lang:Lang;segments?:string}};
@@ -39,8 +39,10 @@ const i18n={
  cs:{name:'Škola klidné síly',short:'ŠKS',overview:'Kurz o 28 lekcích',intro:'Kurz tvoří 28 lekcí, nikoli 28 dnů. Tempo si lze zvolit. Každá lekce má text, komiks a ověřovací úkol.',lesson:'Lekce',ready:'Zveřejněno',draft:'Připravuje se',title5:'Klidná tvář, jistý hlas',go:'Otevřít lekci',back:'Všech 28 lekcí',parts:['Text lekce','Komiks','Ověření znalostí'],summary:'Materiály lekce',notice:'Stránka je vytvořena. Obsah bude doplněn po přípravě a kontrole dospělým průvodcem.',testNotice:'Samostatné ověření znalostí zatím nebylo připraveno.',other:'Materiály této lekce se připravují.',translation:'Překlad tohoto materiálu zatím není k dispozici. Originál je v ruštině.',original:'Otevřít ruský originál',print:'Tisknout komiks',safety:'Bezpečí má přednost. V případě opakované šikany nebo hrozeb požádej o pomoc dospělého.',read:'Číst',open:'Otevřít'}
 };
 const t=i18n[lang];
-const ready=(n:number,p:Part)=>lang==='ru'&&n===5&&(p==='text'||p==='comic');
-const title=lessonNumber===null?t.name: t.lesson+' '+lessonNumber+(lessonNumber===5?' — '+t.title5:'');
+const titles:Record<number,string>={1:'Что такое спокойная сила',2:'Подкол — это не приказ',3:'Короткий ответ вместо оправданий',4:'Как не втягиваться в провокацию',5:'Спокойное лицо — уверенный голос'};
+const contentFor=(n:number,section:'text'|'test')=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='test'?'-test':'')+'.md'];
+const ready=(n:number,p:Part)=>lang==='ru'&&n>=1&&n<=5&&(p==='comic'?n===5:Boolean(contentFor(n,p)));
+const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(titles[lessonNumber]?' — '+(lang==='ru'?titles[lessonNumber]:(lessonNumber===5?t.title5:'')):'');
 const pageTitle=part?t.parts[parts.indexOf(part)]+' — '+title:title;
 const numberId=lessonNumber===null?'':format(lessonNumber);
 const fullOriginal=original(numberId+(part?'/'+part:''));
@@ -52,10 +54,10 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
   <div class="shss-summary"><strong>{t.overview}</strong><span>{t.safety}</span></div>
   <div class="shss-lessons">
    {Array.from({length:28},(_,i)=>i+1).map(n=>
-    <a class={'shss-lesson'+(n===5?' shss-featured':'')} href={link(format(n))}>
+    <a class={'shss-lesson'+(n<=5?' shss-featured':'')} href={link(format(n))}>
      <span class="shss-index">{String(n).padStart(2,'0')}</span>
-     <span class="shss-card-title">{t.lesson} {n}{n===5&&<small>{t.title5}</small>}</span>
-     <span class={'shss-status'+(n===5&&lang==='ru'?' shss-status-ready':'')}>{n===5&&lang==='ru'?t.ready:t.draft}</span>
+     <span class="shss-card-title">{t.lesson} {n}{n<=5&&lang==='ru'&&<small>{titles[n]}</small>}</span>
+     <span class={'shss-status'+(n<=5&&lang==='ru'?' shss-status-ready':'')}>{n===5&&lang==='ru'?t.ready:n<=4&&lang==='ru'?'Текст и тренинг доступны':t.draft}</span>
      <span aria-hidden="true" class="shss-arrow">→</span>
     </a>)}
   </div>
@@ -65,7 +67,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
   <div class="breadcrumb"><a href={link()}>{t.back}</a> / <a href={link(numberId)}>{t.lesson} {lessonNumber}</a>{part&&<> / {t.parts[parts.indexOf(part)]}</>}</div>
   <div class="eyebrow">{t.short} · {t.lesson} {String(lessonNumber).padStart(2,'0')} / 28</div>
   <h1>{part?t.parts[parts.indexOf(part)]:title}</h1>
-  <p>{lessonNumber===5?t.title5:t.other}</p>
+  <p>{lang==='ru'&&titles[lessonNumber]?titles[lessonNumber]:t.other}</p>
  </div>
  {!part?
   <>
@@ -78,20 +80,24 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
       <span class="shss-open">{t.open} →</span>
      </a>)}
    </div>
-   <p class="shss-notice">{lessonNumber===5?t.testNotice:t.notice}</p>
+   <p class="shss-notice">{lessonNumber===5&&lang==='ru'?'Текст, оригинальный комикс и отдельная контрольная работа доступны.':lessonNumber<=4&&lang==='ru'?'Текст урока и контрольная работа с тренингом доступны. Иллюстрированный комикс ожидает подготовки полного комплекта.':t.notice}</p>
   </> :
   <>
    <div class="shss-tabs" aria-label={t.summary}>
     {parts.map((p,i)=><a href={link(numberId+'/'+p)} aria-current={part===p?'page':undefined}>{t.parts[i]}</a>)}
    </div>
-   {lessonNumber===5&&part==='text'&&lang==='ru'&&
-    <article class="prose shss-text" set:html={marked.parse(lesson05)} />}
-   {lessonNumber===5&&part==='comic'&&lang==='ru'&&
-    <><div class="article-actions"><button class="print" data-print>{t.print}</button></div><ShssComic lang={lang}/></>}
-   {!(lessonNumber===5&&lang==='ru'&&(part==='comic'||part==='text'))&&
+   {lang==='ru'&&part==='text'&&lessonNumber<=5&&
+    <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'text'))} />}
+   {lang==='ru'&&part==='test'&&lessonNumber<=5&&
+    <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'test'))} />}
+   {lang==='ru'&&lessonNumber===5&&part==='comic'&&
+    <><div class="article-actions"><button class="print" data-print>{t.print}</button></div><ShssComic lang={lang} lesson={lessonNumber}/></>}
+   {lang==='ru'&&lessonNumber>=1&&lessonNumber<=4&&part==='comic'&&
+    <div class="shss-notice"><p>Полноцветный комикс для этого урока находится в разработке. Текстовая часть и контрольная работа доступны для изучения.</p></div>}
+   {!(lang==='ru'&&lessonNumber<=5)&&
     <div class="shss-notice">
-     <p>{lessonNumber===5&&part!=='test'?t.translation:lessonNumber===5?t.testNotice:t.notice}</p>
-     {lessonNumber===5&&lang!=='ru'&&(part==='text'||part==='comic')&&<a class="button" href={fullOriginal}>{t.original} →</a>}
+     <p>{lessonNumber<=5&&part!=='test'?t.translation:t.notice}</p>
+     {lessonNumber<=5&&lang!=='ru'&&<a class="button" href={fullOriginal}>{t.original} →</a>}
     </div>}
    <div class="shss-bottom"><a class="button" href={link(numberId)}>{t.summary} →</a><a class="button" href={link()}>{t.back} →</a></div>
   </>}
@@ -123,7 +129,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
 .shss-text :global(h2){font-size:1.5rem;margin-top:35px}
 .shss-text :global(h3){font-size:1.17rem;margin-top:23px}
 .shss-text :global(p){line-height:1.75}
-.shss-text :global(li){margin-bottom:9px}
+.shss-text :global(li){margin-bottom:9px}.shss-text :global(details){border:1px solid var(--line);padding:17px;border-radius:12px;margin-top:25px;background:var(--soft)}.shss-text :global(summary){cursor:pointer;font-weight:700;color:var(--accent)}
 .shss-bottom{display:flex;gap:12px;margin:34px 0;flex-wrap:wrap}
 @media(max-width:900px){.shss-lessons{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:720px){.shss-lessons{grid-template-columns:repeat(2,minmax(0,1fr))}.shss-parts{grid-template-columns:1fr}.shss-summary{display:block}.shss-summary strong{display:block;margin-bottom:10px}.shss-lesson{padding:15px}.shss-card-title{min-height:50px}}
