@@ -1,0 +1,107 @@
+---
+type Panel={label:string;tease?:string;reply?:string;note:string;tone?:string};
+type Page={title:string;panels:Panel[]};
+const {lang='ru'}=Astro.props as {lang:'ru'|'en'|'cs'};
+const pages:Page[]=[
+ {title:'СПОКОЙНОЕ ЛИЦО — УВЕРЕННЫЙ ГОЛОС',panels:[
+  {label:'Неприятный комментарий',tease:'Ну и причёска у тебя!',note:'Иногда кто-то старается задеть словами.',tone:'warm'},
+  {label:'Два варианта ответа',tease:'У меня нормальная причёска!',reply:'Мне нравится.',note:'Крик втягивает в спор. Короткий ответ помогает закончить разговор.',tone:'contrast'},
+  {label:'Твой выбор',reply:'Я решаю, что делать дальше.',note:'Одинаковые слова — разные реакции.',tone:'green'},
+  {label:'Чувствовать — нормально',reply:'Я могу злиться и всё равно выбирать свои действия.',note:'Злость, обида и смущение — естественные чувства.',tone:'blue'},
+  {label:'Простой приём',reply:'Пауза. Выдох. Решение.',note:'Не отвечай автоматически. Можно промолчать.',tone:'violet'},
+  {label:'Главное правило',reply:'Моё лицо — не экран для чужих команд.',note:'Спокойная сила — самому решать, что делать дальше.',tone:'gold'}
+ ]},
+ {title:'КАК ВЫГЛЯДИТ СПОКОЙНАЯ СИЛА',panels:[
+  {label:'Сила заметна',reply:'Дело не только в словах.',note:'Имеют значение лицо, голос, поза и взгляд.',tone:'blue'},
+  {label:'Спокойное лицо',reply:'Расслаблю лоб и челюсть.',note:'Не нужно изображать злость или страх.',tone:'green'},
+  {label:'Ровный голос',reply:'Это твоё мнение.',note:'Говори спокойно, чётко, без крика и шёпота.',tone:'violet'},
+  {label:'Уверенная поза',reply:'Я стою свободно и ровно.',note:'Не сжимай кулаки и не делай угрожающих движений.',tone:'gold'},
+  {label:'Спокойный взгляд',reply:'Я возвращаюсь к своему делу.',note:'Короткий взгляд — ответ — смена внимания. Без «дуэли взглядов».',tone:'warm'},
+  {label:'Пять шагов',reply:'Пауза → выдох → расслабь плечи → решение → ответ или уход.',note:'Сначала управляй собой — затем отвечай.',tone:'green'}
+ ]},
+ {title:'ШКОЛЬНЫЕ СИТУАЦИИ',panels:[
+  {label:'Причёска',tease:'С такой причёской из дома вышел?',reply:'Да, мне нормально.',note:'Коротко, без оправданий.',tone:'green'},
+  {label:'Внешность',tease:'Смотри, какой у тебя нос!',reply:'И что?',note:'Также можно совсем не отвечать.',tone:'blue'},
+  {label:'Одежда',tease:'Ты где такую одежду откопал?',reply:'Мне нравится.',note:'Не нужно объяснять стоимость одежды.',tone:'violet'},
+  {label:'Передразнивание',tease:'Ха-ха, сейчас тебя передразню!',reply:'Хватит меня передразнивать.',note:'Голос твёрдый, без крика.',tone:'gold'},
+  {label:'Несколько обидчиков',tease:'Ну и вид у тебя!',reply:'Я пойду к друзьям или взрослому.',note:'Не спорь с группой. При повторении травли сообщи взрослым.',tone:'warm'},
+  {label:'Провокация',tease:'Что молчишь? Испугался?',reply:'Я не собираюсь спорить.',note:'Не нужно доказывать, что ничего не боишься.',tone:'green'}
+ ]},
+ {title:'ТРЕНИРОВКА И МИССИЯ',panels:[
+  {label:'Упражнение 1. Зеркало',reply:'Расслаблю лоб и челюсть.',note:'Сохраняй спокойное выражение лица 10 секунд. Повтори трижды.',tone:'blue'},
+  {label:'Упражнение 2. Голос',reply:'Это твоё мнение.',note:'Скажи фразу сердито, тихо и ровно. Выбери спокойный вариант.',tone:'violet'},
+  {label:'Упражнение 3. Ролевая игра',tease:'Что-то ты сегодня странно выглядишь.',reply:'Мне нормально.',note:'Только с согласного взрослого. Без крика, прикосновений и запугивания. «Стоп» прекращает игру.',tone:'green'},
+  {label:'Проверь себя',reply:'Можно ли молчать? Да. Нужно кричать? Нет.',note:'Кто решает, как отвечать? Ты сам.',tone:'gold'},
+  {label:'Миссия до нового урока',reply:'Я думаю по-другому.',note:'30 секунд спокойного лица; три короткие фразы; вежливое несогласие.',tone:'warm'},
+  {label:'Безопасность важнее',reply:'Если травля повторяется — расскажу взрослым.',note:'Если толкают, окружают или угрожают — уходи в безопасное место и зови на помощь.',tone:'safety'}
+ ]}
+];
+const allTitles={ru:['Комикс к уроку 5','Четыре страницы с примерами и упражнениями.'],en:['Comic for lesson 5','The Russian comic is available in the original language. Translation is being prepared.'],cs:['Komiks k lekci 5','Ruský komiks je k dispozici v původním jazyce. Překlad se připravuje.']};
+---
+<div class="comic-collection">
+ {lang!=='ru'&&<p class="translation-notice">{allTitles[lang][1]}</p>}
+ {pages.map((page,pageIndex)=>
+ <section class="comic-sheet" aria-label={'Комикс, страница '+(pageIndex+1)}>
+  <div class="comic-title"><span class="comic-series">КОТИК: ШКОЛА СПОКОЙНОЙ СИЛЫ</span><div class="comic-subtitle">УРОК 5. {page.title}</div><span class="comic-page-no">Страница {pageIndex+1} из 4</span></div>
+  <div class="comic-grid">
+   {page.panels.map((panel,index)=><div class={'comic-panel tone-'+(panel.tone||'blue')}>
+    <span class="comic-number">{index+1}</span><h3 class="comic-heading">{panel.label}</h3>
+    <div class="comic-dialogues">
+     {panel.tease&&<p class="comic-bubble comic-tease">«{panel.tease}»</p>}
+     {panel.reply&&<p class="comic-bubble comic-reply">«{panel.reply}»</p>}
+    </div>
+    <svg class="comic-illustration" viewBox="0 0 390 162" role="img" aria-label="Котик в школьном коридоре, иллюстрация">
+     <rect x="3" y="3" width="384" height="156" rx="16" fill="#dbeafe"/>
+     <rect x="14" y="21" width="62" height="124" rx="5" fill="#a5c8e7"/><path d="M36 21v124M55 21v124" stroke="#cfe6fa" stroke-width="3"/>
+     <rect x="308" y="16" width="68" height="107" rx="5" fill="#c6e2f5"/><path d="M341 16v107M308 71h68" stroke="#eff8ff" stroke-width="5"/>
+     <path d="M18 152h356" stroke="#97b1ca" stroke-width="5"/>
+     {panel.tease&&<g transform="translate(36,48)">
+       <path d="M0 105Q5 63 42 61Q83 67 86 105" fill="#8b5fb0" stroke="#49375b" stroke-width="3"/>
+       <ellipse cx="44" cy="44" rx="33" ry="38" fill="#ffd3a9" stroke="#49375b" stroke-width="3"/>
+       <path d="M13 35Q6 4 43 8Q88 11 77 33L65 23L57 26L45 19L30 29L21 27Z" fill="#4a3447"/>
+       <path d="M15 15Q36 -5 69 11" stroke="#384b6a" stroke-width="13" stroke-linecap="round" fill="none"/>
+       <path d="M27 47l9-3M51 44l9 3" stroke="#403244" stroke-width="3" stroke-linecap="round"/>
+       <path d="M35 61Q46 71 57 59" stroke="#703e40" stroke-width="3" fill="none"/>
+       <path d="M74 78l29 15" stroke="#ffd3a9" stroke-width="12" stroke-linecap="round"/>
+     </g>}
+     <g transform="translate(197,24)">
+       <path d="M16 132Q21 77 90 81Q156 85 164 132" fill="#386bad" stroke="#2a426c" stroke-width="4"/>
+       <path d="M57 88Q91 132 122 86L114 132H67Z" fill="#fcfcff"/>
+       <path d="M56 87L38 131M123 87L144 131" fill="none" stroke="#a5c8e7" stroke-width="8"/>
+       <ellipse cx="90" cy="52" rx="47" ry="50" fill="#ffdbb8" stroke="#714b32" stroke-width="3"/>
+       <path d="M43 43L40 22L53 28L62 8L71 17L86 1L95 12L111 3L116 21L134 13L132 34L142 41L130 50L121 36L104 38L90 28L76 40L59 36Z" fill="#9e632f" stroke="#714b32" stroke-width="3" stroke-linejoin="round"/>
+       <ellipse cx="71" cy="52" rx="4" ry="6" fill="#2d303b"/><ellipse cx="109" cy="52" rx="4" ry="6" fill="#2d303b"/>
+       <path d="M83 76Q92 85 102 76" stroke="#804d4a" stroke-width="3" fill="none" stroke-linecap="round"/>
+       <path d="M46 101Q28 106 22 120M134 104Q154 107 160 117" stroke="#ffdbb8" stroke-width="10" stroke-linecap="round"/>
+       <path d="M58 88Q91 105 120 87" stroke="#d9e5f5" stroke-width="8" fill="none"/>
+     </g>
+     <path d="M181 35l11 -11m-7 20 14 -2" stroke="#f2b53f" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <p class="comic-note">{panel.note}</p>
+   </div>)}
+  </div>
+  <div class="comic-footer">Школа спокойной силы · {pageIndex+1} / 4</div>
+ </section>)}
+</div>
+<style>
+.comic-collection{display:grid;gap:32px;padding:20px 0 32px}
+.translation-notice{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface)}
+.comic-sheet{color:#1e293b;background:#fff;border-radius:20px;padding:22px;border:1px solid #c7d5e4;box-shadow:0 8px 30px #15213b1a;overflow:hidden;max-width:1010px}
+.comic-title{text-align:center;margin-bottom:18px}
+.comic-series{display:block;background:#ffe477;font-weight:900;font-size:clamp(1rem,2.5vw,1.65rem);letter-spacing:.02em;color:#192441;padding:12px 8px;border-radius:12px}
+.comic-subtitle{background:#2475b8;color:white;border-radius:10px;font-size:clamp(.85rem,1.8vw,1.18rem);font-weight:800;padding:9px;margin:8px 0 4px}
+.comic-page-no{font-size:.8rem;color:#4f5e71}
+.comic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.comic-panel{background:#f0f7ff;border:3px solid #26375b;border-radius:12px;padding:12px;position:relative;display:flex;flex-direction:column;min-height:310px;min-width:0}
+.comic-panel.tone-warm{background:#fff3e5}.comic-panel.tone-green{background:#eaf7e8}.comic-panel.tone-violet{background:#f3ecff}.comic-panel.tone-gold{background:#fff9d8}.comic-panel.tone-contrast{background:#fcebec}.comic-panel.tone-safety{background:#fef0e9}
+.comic-number{position:absolute;top:9px;left:9px;border:3px solid #2c3355;background:#fcec69;width:33px;height:33px;border-radius:50%;display:grid;place-items:center;font-weight:900;line-height:1;font-size:1rem;z-index:1}
+.comic-heading{background:#fff8d5;border:1px solid #9999a8;padding:9px 10px 9px 45px;border-radius:13px;min-height:42px;font-size:1.04rem;font-weight:800;letter-spacing:0;color:#1b2d45;margin:0 0 8px;text-align:center}
+.comic-dialogues{display:flex;gap:6px;align-items:stretch;min-height:72px}
+.comic-bubble{padding:8px 11px;background:white;border:2px solid #253752;border-radius:20px;line-height:1.3;font-size:.95rem;font-weight:750;flex:1;min-width:0;margin:0;word-break:break-word}
+.comic-tease{background:#ffeaef}.comic-reply{background:#e5fbe6}
+.comic-illustration{width:100%;height:auto;min-height:95px;max-height:155px;display:block;margin:auto auto 0}
+.comic-note{font-size:.86rem;line-height:1.35;text-align:center;font-weight:700;margin:5px 0 0;color:#22374f;background:#ffffffc9;padding:9px;border-radius:11px}
+.comic-footer{text-align:center;font-size:.75rem;color:#41536d;margin-top:15px}
+@media(max-width:720px){.comic-sheet{padding:9px;border-radius:12px}.comic-grid{grid-template-columns:1fr;gap:9px}.comic-panel{min-height:270px}.comic-bubble{font-size:.94rem}.comic-series{font-size:1.1rem}}
+@media print{.comic-collection{gap:0}.comic-sheet{box-shadow:none;border:0;border-radius:0;margin:0;break-after:page;page-break-after:always;padding:5mm;max-width:none;overflow:visible}.comic-sheet:last-child{break-after:auto}.comic-grid{grid-template-columns:1fr 1fr;gap:7px}.comic-panel{break-inside:avoid;min-height:77mm;padding:7px}.comic-illustration{max-height:33mm}.comic-note{font-size:9pt}.comic-bubble{font-size:10pt}.comic-series{font-size:15pt}.comic-heading{font-size:11pt}.comic-subtitle{font-size:11pt}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
