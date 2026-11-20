@@ -1,0 +1,50 @@
+---
+type Lang='ru'|'en'|'cs';
+const {lang='ru',lesson=1}=Astro.props as {lang:Lang;lesson:number};
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const titleByLesson:Record<number,string>={
+ 1:'Что такое спокойная сила',
+ 2:'Подкол — это не приказ',
+ 3:'Короткий ответ вместо оправданий',
+ 4:'Как не втягиваться в провокацию'
+};
+const headingsByPage=['Школьная ситуация и выбор','Объяснение главного правила','Пять школьных ситуаций','Тренировка и безопасность'];
+const pages=Array.from({length:4},(_,i)=>{
+ const file='urok_'+String(lesson).padStart(2,'0')+'_komiks_str_'+String(i+1).padStart(2,'0')+'.png';
+ return {index:i+1,file,title:headingsByPage[i],url:base+'/images/shss/lesson-'+String(lesson).padStart(2,'0')+'/'+file};
+});
+---
+<div class="comic-series">
+ <p class="comic-series-intro">Иллюстрированный комикс «{titleByLesson[lesson]}». Четыре страницы PNG, 1055 × 1491 пиксель. Для просмотра в полном размере нажмите на изображение. Страницы можно сохранять отдельно и распечатывать.</p>
+ {pages.map((page,i)=><figure class="comic-sheet">
+  <a href={page.url} target="_blank" rel="noopener noreferrer" aria-label={'Открыть страницу '+page.index+' в полном размере'}>
+   <img src={page.url} width="1055" height="1491" alt={'Комикс, урок '+lesson+', страница '+page.index+' из 4: '+page.title} loading={i===0?'eager':'lazy'} decoding="async"/>
+  </a>
+  <figcaption>
+   <span><strong>Страница {page.index} из 4.</strong> {page.title}</span>
+   <span class="comic-links"><a href={page.url} target="_blank" rel="noopener noreferrer">Полный размер</a><a href={page.url} download={page.file}>Скачать PNG</a></span>
+  </figcaption>
+ </figure>)}
+</div>
+<style>
+.comic-series{width:100%;max-width:1055px;margin:0 auto 25px;display:flex;flex-direction:column;gap:24px}
+.comic-series-intro{color:var(--muted);font-size:.92rem;max-width:900px;line-height:1.65;margin:0 0 3px}
+.comic-sheet{margin:0;padding:0;overflow:hidden;border:1px solid var(--line);background:var(--surface);border-radius:14px;box-shadow:var(--shadow)}
+.comic-sheet>a{display:block;line-height:0;background:white}
+.comic-sheet>a:focus-visible,.comic-links a:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.comic-sheet img{display:block;width:100%;height:auto;aspect-ratio:1055/1491;object-fit:contain}
+.comic-sheet figcaption{padding:14px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;font-size:.83rem;line-height:1.5;color:var(--muted)}
+.comic-links{display:flex;gap:17px;align-items:center;flex-wrap:wrap}
+.comic-links a{color:var(--accent);font-weight:650;text-underline-offset:3px}
+@media(max-width:700px){.comic-series{gap:14px}.comic-sheet{border-radius:8px}.comic-sheet figcaption{padding:11px 13px;font-size:.78rem}}
+@page{size:A4 portrait;margin:7mm}
+@media print{
+ :global(header),:global(footer),:global(.page-head),:global(.breadcrumb),:global(.shss-tabs),:global(.article-actions),:global(.shss-bottom){display:none!important}
+ :global(main){margin:0!important;padding:0!important;min-height:0!important;width:100%!important}
+ .comic-series{width:100%;max-width:none;display:block;margin:0;padding:0}
+ .comic-series-intro,.comic-sheet figcaption{display:none!important}
+ .comic-sheet{width:100%;max-width:none;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible;break-inside:avoid;page-break-inside:avoid;break-after:page;page-break-after:always}
+ .comic-sheet:last-child{break-after:auto;page-break-after:auto}
+ .comic-sheet img{display:block;width:100%;height:auto;max-width:100%;max-height:282mm;object-fit:contain}
+}
+</style>
