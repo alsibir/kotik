@@ -10,6 +10,8 @@ type PathEntry={params:{lang:Lang;segments?:string}};
 const parts:Part[]=['text','comic','test'];
 const format=(n:number)=>'lesson-'+String(n).padStart(2,'0');
 export function getStaticPaths():PathEntry[]{
+ const parts:Part[]=['text','comic','test'];
+ const format=(n:number)=>'lesson-'+String(n).padStart(2,'0');
  const result:PathEntry[]=[];
  for(const lang of languages){
   result.push({params:{lang,segments:undefined}});
