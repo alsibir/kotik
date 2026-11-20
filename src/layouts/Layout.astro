@@ -24,7 +24,7 @@ try { const v=localStorage.getItem('kotik-theme')||'system'; document.documentEl
 <header><div class="wrap">
 <div class="topbar">
 <a class="brand" href={href()}><img src={`${base}/favicon.svg`} alt="" width="46" height="46"/><span><strong>{t.name}</strong><small>{t.subtitle}</small></span></a>
-<nav aria-label={t.explore}>{sections.map((s,i)=><a href={href(s)} aria-current={route===s||route.startsWith(s+'/')?'page':undefined}>{t.nav[i]}</a>)}</nav>
+<nav aria-label={t.explore}><a href={href("shss")} title={lang==="ru"?"Школа спокойной силы":lang==="en"?"School of Calm Strength":"Škola klidné síly"} aria-current={route==="shss"||route.startsWith("shss/")?"page":undefined}>{lang==="ru"?"ШСС":lang==="en"?"SCS":"ŠKS"}</a>{sections.map((s,i)=><a href={href(s)} aria-current={route===s||route.startsWith(s+'/')?'page':undefined}>{t.nav[i]}</a>)}</nav>
 <div class="controls">
 <select id="language" aria-label="Language / Язык / Jazyk" data-base={base} data-route={route}>{languages.map(l=><option value={l} selected={l===lang}>{{ru:'Русский',en:'English',cs:'Čeština'}[l]}</option>)}</select>
 <select id="theme" aria-label={t.theme}>{['system','light','dark'].map((v,i)=><option value={v}>{t.themes[i]}</option>)}</select>

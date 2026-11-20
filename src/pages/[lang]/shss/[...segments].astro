@@ -1,0 +1,130 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ShssComic from '../../../components/ShssComic.astro';
+import {marked} from 'marked';
+import {languages,type Lang} from '../../../data/ui';
+import lesson05 from '../../../content/shss/ru/lesson-05.md?raw';
+
+type Part='text'|'comic'|'test';
+type PathEntry={params:{lang:Lang;segments?:string}};
+const parts:Part[]=['text','comic','test'];
+const format=(n:number)=>'lesson-'+String(n).padStart(2,'0');
+export function getStaticPaths():PathEntry[]{
+ const result:PathEntry[]=[];
+ for(const lang of languages){
+  result.push({params:{lang,segments:undefined}});
+  for(let n=1;n<=28;n++){
+   const slug=format(n);
+   result.push({params:{lang,segments:slug}});
+   for(const part of parts)result.push({params:{lang,segments:slug+'/'+part}});
+  }
+ }
+ return result;
+}
+const lang=Astro.params.lang as Lang;
+const segments=Astro.params.segments||'';
+const [slug,partSlug]=segments.split('/');
+const lessonNumber=slug&&/^lesson-(0[1-9]|1\d|2[0-8])$/.test(slug)?Number(slug.slice(7)):null;
+const part=partSlug as Part|undefined;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const root=base+'/'+lang+'/shss/';
+const link=(p='')=>root+(p?p+'/':'');
+const original=(p='')=>base+'/ru/shss/'+(p?p+'/':'');
+const route='shss'+(segments?'/'+segments:'');
+const i18n={
+ ru:{name:'Школа спокойной силы',short:'ШСС',overview:'Программа из 28 уроков',intro:'Курс состоит из 28 уроков, а не из 28 дней. Занятия проходят в удобном темпе. Каждый урок имеет текстовую часть, комикс и контрольную работу.',lesson:'Урок',ready:'Материал опубликован',draft:'Материал готовится',title5:'Спокойное лицо — уверенный голос',go:'Открыть урок',back:'Все 28 уроков',parts:['Текст урока','Комикс','Контрольная работа'],summary:'Материалы урока',notice:'Эта страница создана. Учебный материал будет добавлен после подготовки и проверки взрослым наставником.',testNotice:'Отдельная контрольная работа ещё не подготовлена. Краткий блиц-опрос доступен в тексте урока 5.',other:'Все материалы этого урока пока готовятся.',translation:'Перевод этого материала ещё не подготовлен. Оригинал доступен на русском языке.',original:'Открыть русский оригинал',print:'Печатать комикс',safety:'Безопасность важнее спора: при повторяющейся травле или угрозах необходимо обратиться к взрослому.',read:'Читать',open:'Открыть'},
+ en:{name:'School of Calm Strength',short:'SCS',overview:'A 28-lesson course',intro:'The course consists of 28 lessons, not 28 days. Lessons can be taken at a comfortable pace. Each has a text section, a comic and a knowledge check.',lesson:'Lesson',ready:'Available',draft:'Coming soon',title5:'Calm face, confident voice',go:'Open lesson',back:'All 28 lessons',parts:['Lesson text','Comic','Knowledge check'],summary:'Lesson materials',notice:'This page has been created. Its content will be added after preparation and adult editorial review.',testNotice:'A separate knowledge check has not yet been prepared.',other:'All materials for this lesson are in preparation.',translation:'The translation of this material is not yet available. The original is in Russian.',original:'Open Russian original',print:'Print comic',safety:'Safety comes first. Seek adult help in case of repeated bullying or threats.',read:'Read',open:'Open'},
+ cs:{name:'Škola klidné síly',short:'ŠKS',overview:'Kurz o 28 lekcích',intro:'Kurz tvoří 28 lekcí, nikoli 28 dnů. Tempo si lze zvolit. Každá lekce má text, komiks a ověřovací úkol.',lesson:'Lekce',ready:'Zveřejněno',draft:'Připravuje se',title5:'Klidná tvář, jistý hlas',go:'Otevřít lekci',back:'Všech 28 lekcí',parts:['Text lekce','Komiks','Ověření znalostí'],summary:'Materiály lekce',notice:'Stránka je vytvořena. Obsah bude doplněn po přípravě a kontrole dospělým průvodcem.',testNotice:'Samostatné ověření znalostí zatím nebylo připraveno.',other:'Materiály této lekce se připravují.',translation:'Překlad tohoto materiálu zatím není k dispozici. Originál je v ruštině.',original:'Otevřít ruský originál',print:'Tisknout komiks',safety:'Bezpečí má přednost. V případě opakované šikany nebo hrozeb požádej o pomoc dospělého.',read:'Číst',open:'Otevřít'}
+};
+const t=i18n[lang];
+const ready=(n:number,p:Part)=>lang==='ru'&&n===5&&(p==='text'||p==='comic');
+const title=lessonNumber===null?t.name: t.lesson+' '+lessonNumber+(lessonNumber===5?' — '+t.title5:'');
+const pageTitle=part?t.parts[parts.indexOf(part)]+' — '+title:title;
+const numberId=lessonNumber===null?'':format(lessonNumber);
+const fullOriginal=original(numberId+(part?'/'+part:''));
+---
+<Layout lang={lang} title={pageTitle} route={route} description={t.intro}>
+ {lessonNumber===null?
+ <>
+  <div class="page-head"><div class="eyebrow">{t.short} · 28</div><h1>{t.name}</h1><p>{t.intro}</p></div>
+  <div class="shss-summary"><strong>{t.overview}</strong><span>{t.safety}</span></div>
+  <div class="shss-lessons">
+   {Array.from({length:28},(_,i)=>i+1).map(n=>
+    <a class={'shss-lesson'+(n===5?' shss-featured':'')} href={link(format(n))}>
+     <span class="shss-index">{String(n).padStart(2,'0')}</span>
+     <span class="shss-card-title">{t.lesson} {n}{n===5&&<small>{t.title5}</small>}</span>
+     <span class={'shss-status'+(n===5&&lang==='ru'?' shss-status-ready':'')}>{n===5&&lang==='ru'?t.ready:t.draft}</span>
+     <span aria-hidden="true" class="shss-arrow">→</span>
+    </a>)}
+  </div>
+ </> :
+ <>
+ <div class="page-head">
+  <div class="breadcrumb"><a href={link()}>{t.back}</a> / <a href={link(numberId)}>{t.lesson} {lessonNumber}</a>{part&&<> / {t.parts[parts.indexOf(part)]}</>}</div>
+  <div class="eyebrow">{t.short} · {t.lesson} {String(lessonNumber).padStart(2,'0')} / 28</div>
+  <h1>{part?t.parts[parts.indexOf(part)]:title}</h1>
+  <p>{lessonNumber===5?t.title5:t.other}</p>
+ </div>
+ {!part?
+  <>
+   <div class="shss-parts">
+    {parts.map((p,i)=>
+     <a class="shss-part" href={link(numberId+'/'+p)}>
+      <span class="shss-index">0{i+1}</span>
+      <h2>{t.parts[i]}</h2>
+      <span class={'shss-status'+(ready(lessonNumber,p)?' shss-status-ready':'')}>{ready(lessonNumber,p)?t.ready:t.draft}</span>
+      <span class="shss-open">{t.open} →</span>
+     </a>)}
+   </div>
+   <p class="shss-notice">{lessonNumber===5?t.testNotice:t.notice}</p>
+  </> :
+  <>
+   <div class="shss-tabs" aria-label={t.summary}>
+    {parts.map((p,i)=><a href={link(numberId+'/'+p)} aria-current={part===p?'page':undefined}>{t.parts[i]}</a>)}
+   </div>
+   {lessonNumber===5&&part==='text'&&lang==='ru'&&
+    <article class="prose shss-text" set:html={marked.parse(lesson05)} />}
+   {lessonNumber===5&&part==='comic'&&lang==='ru'&&
+    <><div class="article-actions"><button class="print" data-print>{t.print}</button></div><ShssComic lang={lang}/></>}
+   {!(lessonNumber===5&&lang==='ru'&&(part==='comic'||part==='text'))&&
+    <div class="shss-notice">
+     <p>{lessonNumber===5&&part!=='test'?t.translation:lessonNumber===5?t.testNotice:t.notice}</p>
+     {lessonNumber===5&&lang!=='ru'&&(part==='text'||part==='comic')&&<a class="button" href={fullOriginal}>{t.original} →</a>}
+    </div>}
+   <div class="shss-bottom"><a class="button" href={link(numberId)}>{t.summary} →</a><a class="button" href={link()}>{t.back} →</a></div>
+  </>}
+ </>
+ }
+</Layout>
+<style>
+.shss-summary{display:flex;justify-content:space-between;align-items:center;gap:24px;border-radius:14px;background:var(--soft);padding:22px;margin:0 0 26px}
+.shss-summary strong{font-size:1.1rem}.shss-summary span{max-width:560px;color:var(--muted);font-size:.9rem}
+.shss-lessons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.shss-lesson,.shss-part{display:flex;flex-direction:column;gap:10px;min-width:0;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:var(--shadow)}
+.shss-lesson:hover,.shss-part:hover{border-color:var(--accent)}
+.shss-featured{border-color:var(--accent);background:var(--soft)}
+.shss-index{color:var(--accent);font-weight:800;font-size:1.5rem;line-height:1}
+.shss-card-title{font-weight:700;line-height:1.35;font-size:1.07rem;min-height:57px}
+.shss-card-title small{display:block;color:var(--muted);font-size:.82rem;font-weight:500;margin-top:5px}
+.shss-status{color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:auto}
+.shss-status-ready{color:var(--accent);font-weight:700}
+.shss-arrow,.shss-open{font-size:.83rem;color:var(--accent);align-self:flex-end}
+.shss-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shss-part{min-height:190px;padding:25px}.shss-part h2{font-size:1.4rem;margin:10px 0 5px}
+.shss-notice{max-width:840px;margin:30px 0;border:1px dashed var(--line);border-radius:14px;padding:26px;color:var(--muted);background:var(--surface)}
+.shss-notice p{margin-bottom:14px}.shss-notice p:last-child{margin-bottom:0}
+.shss-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 24px}
+.shss-tabs a{background:var(--surface);padding:9px 16px;border:1px solid var(--line);border-radius:12px;text-decoration:none;font-size:.9rem}
+.shss-tabs a[aria-current=page]{border-color:var(--accent);background:var(--soft);font-weight:700}
+.shss-text{max-width:880px;background:var(--surface);border:1px solid var(--line);padding:clamp(18px,4vw,48px);border-radius:15px}
+.shss-text :global(h1){font-size:clamp(1.8rem,3.4vw,2.6rem)}
+.shss-text :global(h2){font-size:1.5rem;margin-top:35px}
+.shss-text :global(h3){font-size:1.17rem;margin-top:23px}
+.shss-text :global(p){line-height:1.75}
+.shss-text :global(li){margin-bottom:9px}
+.shss-bottom{display:flex;gap:12px;margin:34px 0;flex-wrap:wrap}
+@media(max-width:900px){.shss-lessons{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:720px){.shss-lessons{grid-template-columns:repeat(2,minmax(0,1fr))}.shss-parts{grid-template-columns:1fr}.shss-summary{display:block}.shss-summary strong{display:block;margin-bottom:10px}.shss-lesson{padding:15px}.shss-card-title{min-height:50px}}
+@media(max-width:400px){.shss-lessons{gap:9px}.shss-lesson{padding:12px}.shss-card-title{font-size:.95rem}}
+@media print{.shss-tabs,.shss-bottom,.article-actions{display:none}.shss-text{border:0;padding:0;max-width:none}.shss-lesson,.shss-part{box-shadow:none;break-inside:avoid}}
+</style>
