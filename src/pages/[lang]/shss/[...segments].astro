@@ -42,7 +42,7 @@ const i18n={
 const t=i18n[lang];
 const titles:Record<number,string>={1:'Что такое спокойная сила',2:'Подкол — это не приказ',3:'Короткий ответ вместо оправданий',4:'Как не втягиваться в провокацию',5:'Спокойное лицо — уверенный голос'};
 const contentFor=(n:number,section:'text'|'test')=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='test'?'-test':'')+'.md'];
-const ready=(n:number,p:Part)=>lang==='ru'&&n>=1&&n<=10&&(p==='comic'?n<=7:Boolean(contentFor(n,p)));
+const ready=(n:number,p:Part)=>lang==='ru'&&n>=1&&n<=10&&(p==='comic'?n<=9:Boolean(contentFor(n,p)));
 const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(titles[lessonNumber]?' — '+(lang==='ru'?titles[lessonNumber]:(lessonNumber===5?t.title5:'')):'');
 const pageTitle=part?t.parts[parts.indexOf(part)]+' — '+title:title;
 const numberId=lessonNumber===null?'':format(lessonNumber);
@@ -58,7 +58,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
     <a class={'shss-lesson'+(n<=10?' shss-featured':'')} href={link(format(n))}>
      <span class="shss-index">{String(n).padStart(2,'0')}</span>
      <span class="shss-card-title">{t.lesson} {n}{n<=10&&lang==='ru'&&<small>{titles[n]}</small>}</span>
-     <span class={'shss-status'+(n<=10&&lang==='ru'?' shss-status-ready':'')}>{n<=7&&lang==='ru'?t.ready:n<=10&&lang==='ru'?'Текст и контрольная работа доступны':t.draft}</span>
+     <span class={'shss-status'+(n<=9&&lang==='ru'?' shss-status-ready':'')}>{n<=9&&lang==='ru'?t.ready:n===10&&lang==='ru'?'Текст и контрольная работа доступны':t.draft}</span>
      <span aria-hidden="true" class="shss-arrow">→</span>
     </a>)}
   </div>
@@ -81,7 +81,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
       <span class="shss-open">{t.open} →</span>
      </a>)}
    </div>
-   <p class="shss-notice">{lessonNumber<=7&&lang==='ru'?'Полный комплект: текст урока, четырёхстраничный комикс, контрольная работа и практический тренинг.':lessonNumber<=10&&lang==='ru'?'Текст урока и контрольная работа с тренингом опубликованы. Полноразмерный комикс по этой теме ещё готовится.':t.notice}</p>
+   <p class="shss-notice">{lessonNumber<=9&&lang==='ru'?'Полный комплект: текст урока, четырёхстраничный комикс, контрольная работа и практический тренинг.':lessonNumber<=10&&lang==='ru'?'Текст урока и контрольная работа с тренингом опубликованы. Полноразмерный комикс по этой теме ещё готовится.':t.notice}</p>
   </> :
   <>
    <div class="shss-tabs" aria-label={t.summary}>
@@ -91,9 +91,9 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
     <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'text'))} />}
    {lang==='ru'&&part==='test'&&lessonNumber<=10&&
     <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'test'))} />}
-   {lang==='ru'&&lessonNumber<=7&&part==='comic'&&
+   {lang==='ru'&&lessonNumber<=9&&part==='comic'&&
     <><div class="article-actions"><button class="print" data-print>{t.print}</button></div>{lessonNumber===5?<ShssComic lang={lang}/>:<ShssComicSeries lang={lang} lesson={lessonNumber}/>}</>}
-   {lang==='ru'&&lessonNumber>=8&&lessonNumber<=10&&part==='comic'&&<div class="shss-notice"><p>Четырёхстраничный иллюстрированный комикс ещё готовится. Доступны текст урока и контрольная работа с практическим тренингом.</p></div>}
+   {lang==='ru'&&lessonNumber===10&&part==='comic'&&<div class="shss-notice"><p>Четырёхстраничный иллюстрированный комикс ещё готовится. Доступны текст урока и контрольная работа с практическим тренингом.</p></div>}
    {!(lang==='ru'&&lessonNumber<=10)&&
     <div class="shss-notice">
      <p>{lessonNumber<=10&&part!=='test'?t.translation:t.notice}</p>
