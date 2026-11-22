@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import ShssLessonNavigation from '../../../components/ShssLessonNavigation.astro';
 import ShssComic from '../../../components/ShssComic.astro';
 import ShssComicSeries from '../../../components/ShssComicSeries.astro';
 import {marked} from 'marked';
@@ -76,6 +77,8 @@ const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(lang==='ru'?' 
 const sectionTitle=part==='techniques'?t.techniquesTitle:part?t.parts[parts.indexOf(part)]:undefined;
 const pageTitle=sectionTitle?sectionTitle+' — '+title:title;
 const numberId=lessonNumber===null?'':format(lessonNumber);
+const lessonNavigation={ru:'Переход между уроками',en:'Lesson navigation',cs:'Přechod mezi lekcemi'}[lang];
+const lessonLink=(n:number)=>link(format(n)+(part?'/'+part:''));
 const fullOriginal=original(numberId+(part?'/'+part:''));
 ---
 <Layout lang={lang} title={pageTitle} route={route} description={t.intro}>
@@ -111,12 +114,14 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
       <span class="shss-open">{t.open} →</span>
      </a>)}
    </div>
+   <ShssLessonNavigation lessonNumber={lessonNumber} label={lessonNavigation} lessonLabel={t.lesson} sectionTitle={sectionTitle} lessonLink={lessonLink} />
    <p class="shss-notice">{lessonNumber<=9&&lang==='ru'?'Полный комплект: текст урока, четырёхстраничный комикс, контрольная работа и практический тренинг.':hasTextAndTest(lessonNumber)?'Текст урока и контрольная работа с тренингом опубликованы. Полноразмерный комикс по этой теме ещё готовится.':t.notice}</p>
   </> :
   <>
    <div class="shss-tabs" aria-label={t.summary}>
     {parts.map((p,i)=><a href={link(numberId+'/'+p)} aria-current={part===p?'page':undefined}>{t.parts[i]}</a>)}
    </div>
+   <ShssLessonNavigation lessonNumber={lessonNumber} label={lessonNavigation} lessonLabel={t.lesson} sectionTitle={sectionTitle} lessonLink={lessonLink} />
    {material&&part==='techniques'&&
     <article class="prose shss-text shss-techniques">
      <p><strong>Котик, выучи эти фразы наизусть.</strong> Повторяй их вслух, пока нужный ответ не начнёт вспоминаться и произноситься сам, без долгих раздумий. Если даны варианты одной фразы, начни с того, который тебе проще произнести. В заготовках с многоточием подставляй слова по ситуации.</p>
@@ -132,6 +137,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
      <p>{hasMaterial(lessonNumber,part)?t.translation:part==='comic'&&hasTextAndTest(lessonNumber)?'Комикс готовится. Текст урока и контрольная работа доступны.':t.notice}</p>
      {hasMaterial(lessonNumber,part)&&<a class="button" href={fullOriginal}>{t.original} →</a>}
     </div>}
+   <ShssLessonNavigation lessonNumber={lessonNumber} label={lessonNavigation} lessonLabel={t.lesson} sectionTitle={sectionTitle} lessonLink={lessonLink} />
    <div class="shss-bottom"><a class="button" href={link(numberId)}>{t.summary} →</a><a class="button" href={link()}>{t.back} →</a></div>
   </>}
  </>

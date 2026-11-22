@@ -1,0 +1,34 @@
+---
+interface Props {
+  lessonNumber: number;
+  label: string;
+  lessonLabel: string;
+  sectionTitle?: string;
+  lessonLink: (number: number) => string;
+}
+
+const {lessonNumber, label, lessonLabel, sectionTitle, lessonLink} = Astro.props;
+const destination = (number: number) => sectionTitle
+  ? `${sectionTitle}, ${lessonLabel} ${number}`
+  : `${lessonLabel} ${number}`;
+---
+<nav aria-label={label}>
+  {lessonNumber > 1 &&
+    <a class="previous" rel="prev" href={lessonLink(lessonNumber - 1)} aria-label={destination(lessonNumber - 1)}>
+      <span aria-hidden="true">←</span> {lessonLabel} {lessonNumber - 1}
+    </a>}
+  {lessonNumber < 28 &&
+    <a class="next" rel="next" href={lessonLink(lessonNumber + 1)} aria-label={destination(lessonNumber + 1)}>
+      {lessonLabel} {lessonNumber + 1} <span aria-hidden="true">→</span>
+    </a>}
+</nav>
+
+<style>
+  nav {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 24px}
+  a {display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none}
+  a:hover {border-color:var(--accent);background:var(--soft)}
+  a:focus-visible {outline:2px solid var(--accent);outline-offset:3px}
+  .previous {grid-column:1;justify-self:start}
+  .next {grid-column:2;justify-self:end}
+  @media print {nav {display:none}}
+</style>
