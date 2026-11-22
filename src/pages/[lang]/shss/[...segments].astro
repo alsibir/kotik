@@ -6,12 +6,12 @@ import {marked} from 'marked';
 import {languages,type Lang} from '../../../data/ui';
 const sourceFiles=import.meta.glob('../../../content/shss/ru/lesson-*.md',{query:'?raw',import:'default',eager:true}) as Record<string,string>;
 
-type Part='text'|'comic'|'test';
+type Part='text'|'comic'|'test'|'techniques';
 type PathEntry={params:{lang:Lang;segments?:string}};
-const parts:Part[]=['text','comic','test'];
+const parts:Part[]=['text','comic','test','techniques'];
 const format=(n:number)=>'lesson-'+String(n).padStart(2,'0');
 export function getStaticPaths():PathEntry[]{
- const parts:Part[]=['text','comic','test'];
+ const parts:Part[]=['text','comic','test','techniques'];
  const format=(n:number)=>'lesson-'+String(n).padStart(2,'0');
  const result:PathEntry[]=[];
  for(const lang of languages){
@@ -35,9 +35,9 @@ const link=(p='')=>root+(p?p+'/':'');
 const original=(p='')=>base+'/ru/shss/'+(p?p+'/':'');
 const route='shss'+(segments?'/'+segments:'');
 const i18n={
- ru:{name:'Школа спокойной силы',short:'ШСС',overview:'Программа из 28 уроков',intro:'Курс состоит из 28 уроков, а не из 28 дней. Занятия проходят в удобном темпе. Каждый урок имеет текстовую часть, комикс и контрольную работу.',lesson:'Урок',ready:'Материал опубликован',draft:'Материал готовится',title5:'Спокойное лицо — уверенный голос',go:'Открыть урок',back:'Все 28 уроков',parts:['Текст урока','Комикс','Контрольная работа'],summary:'Материалы урока',notice:'Эта страница создана. Учебный материал будет добавлен после подготовки и проверки взрослым наставником.',testNotice:'Отдельная контрольная работа ещё не подготовлена. Краткий блиц-опрос доступен в тексте урока 5.',other:'Все материалы этого урока пока готовятся.',translation:'Перевод этого материала ещё не подготовлен. Оригинал доступен на русском языке.',original:'Открыть русский оригинал',print:'Печатать комикс',safety:'Безопасность важнее спора: при повторяющейся травле или угрозах необходимо обратиться к взрослому.',read:'Читать',open:'Открыть'},
- en:{name:'School of Calm Strength',short:'SCS',overview:'A 28-lesson course',intro:'The course consists of 28 lessons, not 28 days. Lessons can be taken at a comfortable pace. Each has a text section, a comic and a knowledge check.',lesson:'Lesson',ready:'Available',draft:'Coming soon',title5:'Calm face, confident voice',go:'Open lesson',back:'All 28 lessons',parts:['Lesson text','Comic','Knowledge check'],summary:'Lesson materials',notice:'This page has been created. Its content will be added after preparation and adult editorial review.',testNotice:'A separate knowledge check has not yet been prepared.',other:'All materials for this lesson are in preparation.',translation:'The translation of this material is not yet available. The original is in Russian.',original:'Open Russian original',print:'Print comic',safety:'Safety comes first. Seek adult help in case of repeated bullying or threats.',read:'Read',open:'Open'},
- cs:{name:'Škola klidné síly',short:'ŠKS',overview:'Kurz o 28 lekcích',intro:'Kurz tvoří 28 lekcí, nikoli 28 dnů. Tempo si lze zvolit. Každá lekce má text, komiks a ověřovací úkol.',lesson:'Lekce',ready:'Zveřejněno',draft:'Připravuje se',title5:'Klidná tvář, jistý hlas',go:'Otevřít lekci',back:'Všech 28 lekcí',parts:['Text lekce','Komiks','Ověření znalostí'],summary:'Materiály lekce',notice:'Stránka je vytvořena. Obsah bude doplněn po přípravě a kontrole dospělým průvodcem.',testNotice:'Samostatné ověření znalostí zatím nebylo připraveno.',other:'Materiály této lekce se připravují.',translation:'Překlad tohoto materiálu zatím není k dispozici. Originál je v ruštině.',original:'Otevřít ruský originál',print:'Tisknout komiks',safety:'Bezpečí má přednost. V případě opakované šikany nebo hrozeb požádej o pomoc dospělého.',read:'Číst',open:'Otevřít'}
+ ru:{name:'Школа спокойной силы',short:'ШСС',overview:'Программа из 28 уроков',intro:'Курс состоит из 28 уроков, а не из 28 дней. Занятия проходят в удобном темпе. В каждом уроке есть текст, контрольная работа и приёмы словесной борьбы. Для комиксов предусмотрена отдельная вкладка.',lesson:'Урок',ready:'Материал опубликован',draft:'Материал готовится',title5:'Спокойное лицо — уверенный голос',go:'Открыть урок',back:'Все 28 уроков',parts:['Текст урока','Комикс','Контрольная работа','Приёмы СБ'],techniquesTitle:'Приёмы словесной борьбы',summary:'Материалы урока',notice:'Эта страница создана. Учебный материал будет добавлен после подготовки и проверки взрослым наставником.',testNotice:'Отдельная контрольная работа ещё не подготовлена. Краткий блиц-опрос доступен в тексте урока 5.',other:'Все материалы этого урока пока готовятся.',translation:'Перевод этого материала ещё не подготовлен. Оригинал доступен на русском языке.',original:'Открыть русский оригинал',print:'Печатать комикс',safety:'Безопасность важнее спора: при повторяющейся травле или угрозах необходимо обратиться к взрослому.',read:'Читать',open:'Открыть'},
+ en:{name:'School of Calm Strength',short:'SCS',overview:'A 28-lesson course',intro:'The course consists of 28 lessons, not 28 days. Lessons can be taken at a comfortable pace. Each lesson has tabs for the text, comic, knowledge check and response techniques.',lesson:'Lesson',ready:'Available',draft:'Coming soon',title5:'Calm face, confident voice',go:'Open lesson',back:'All 28 lessons',parts:['Lesson text','Comic','Knowledge check','Response techniques'],techniquesTitle:'Verbal response techniques',summary:'Lesson materials',notice:'This page has been created. Its content will be added after preparation and adult editorial review.',testNotice:'A separate knowledge check has not yet been prepared.',other:'All materials for this lesson are in preparation.',translation:'The translation of this material is not yet available. The original is in Russian.',original:'Open Russian original',print:'Print comic',safety:'Safety comes first. Seek adult help in case of repeated bullying or threats.',read:'Read',open:'Open'},
+ cs:{name:'Škola klidné síly',short:'ŠKS',overview:'Kurz o 28 lekcích',intro:'Kurz tvoří 28 lekcí, nikoli 28 dnů. Tempo si lze zvolit. Každá lekce má záložky pro text, komiks, ověřovací úkol a techniky odpovědí.',lesson:'Lekce',ready:'Zveřejněno',draft:'Připravuje se',title5:'Klidná tvář, jistý hlas',go:'Otevřít lekci',back:'Všech 28 lekcí',parts:['Text lekce','Komiks','Ověření znalostí','Techniky odpovědí'],techniquesTitle:'Techniky slovní obrany',summary:'Materiály lekce',notice:'Stránka je vytvořena. Obsah bude doplněn po přípravě a kontrole dospělým průvodcem.',testNotice:'Samostatné ověření znalostí zatím nebylo připraveno.',other:'Materiály této lekce se připravují.',translation:'Překlad tohoto materiálu zatím není k dispozici. Originál je v ruštině.',original:'Otevřít ruský originál',print:'Tisknout komiks',safety:'Bezpečí má přednost. V případě opakované šikany nebo hrozeb požádej o pomoc dospělého.',read:'Číst',open:'Otevřít'}
 };
 const t=i18n[lang];
 const titles:Record<number,string>={1:'Что такое спокойная сила',2:'Подкол — это не приказ',3:'Короткий ответ вместо оправданий',4:'Как не втягиваться в провокацию',5:'Спокойное лицо — уверенный голос',
@@ -65,7 +65,7 @@ const titles:Record<number,string>={1:'Что такое спокойная си
  27:'Как применять навыки вместе',
  28:'Итоговый урок. Спокойная сила в действии',
 };
-const contentFor=(n:number,section:'text'|'test')=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='test'?'-test':'')+'.md'];
+const contentFor=(n:number,section:Exclude<Part,'comic'>)=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='text'?'':'-'+section)+'.md'];
 const hasMaterial=(n:number,p:Part)=>p==='comic'?n<=9:Boolean(contentFor(n,p));
 const ready=(n:number,p:Part)=>lang==='ru'&&hasMaterial(n,p);
 const hasTextAndTest=(n:number)=>ready(n,'text')&&ready(n,'test');
@@ -73,7 +73,8 @@ const material=lessonNumber!==null&&part&&part!=='comic'&&ready(lessonNumber,par
  ? contentFor(lessonNumber,part)
  : undefined;
 const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(lang==='ru'?' — '+titles[lessonNumber]:lessonNumber===5?' — '+t.title5:'');
-const pageTitle=part?t.parts[parts.indexOf(part)]+' — '+title:title;
+const sectionTitle=part==='techniques'?t.techniquesTitle:part?t.parts[parts.indexOf(part)]:undefined;
+const pageTitle=sectionTitle?sectionTitle+' — '+title:title;
 const numberId=lessonNumber===null?'':format(lessonNumber);
 const fullOriginal=original(numberId+(part?'/'+part:''));
 ---
@@ -96,7 +97,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
  <div class="page-head">
   <div class="breadcrumb"><a href={link()}>{t.back}</a> / <a href={link(numberId)}>{t.lesson} {lessonNumber}</a>{part&&<> / {t.parts[parts.indexOf(part)]}</>}</div>
   <div class="eyebrow">{t.short} · {t.lesson} {String(lessonNumber).padStart(2,'0')} / 28</div>
-  <h1>{part?t.parts[parts.indexOf(part)]:title}</h1>
+  <h1>{sectionTitle??title}</h1>
   <p>{lang==='ru'&&titles[lessonNumber]?titles[lessonNumber]:t.other}</p>
  </div>
  {!part?
@@ -116,7 +117,14 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
    <div class="shss-tabs" aria-label={t.summary}>
     {parts.map((p,i)=><a href={link(numberId+'/'+p)} aria-current={part===p?'page':undefined}>{t.parts[i]}</a>)}
    </div>
-   {material&&<article class="prose shss-text" set:html={marked.parse(material)} />}
+   {material&&part==='techniques'&&
+    <article class="prose shss-text shss-techniques">
+     <p><strong>Котик, выучи эти фразы наизусть.</strong> Повторяй их вслух, пока нужный ответ не начнёт вспоминаться и произноситься сам, без долгих раздумий. Если даны варианты одной фразы, начни с того, который тебе проще произнести. В заготовках с многоточием подставляй слова по ситуации.</p>
+     <p>Попроси Команду спокойной силы задавать вопросы из последней колонки вразнобой. Закрой колонку с ответами, выбери фразу или действие и объясни свой выбор. Затем сверься с таблицей и повтори ответ обычным голосом.</p>
+     <p>При повторяющейся травле обратись к доверенному взрослому. При угрозе зови на помощь сразу и переходи в безопасное место при первой возможности.</p>
+     <div class="shss-table-scroll" role="region" aria-label="Таблица приёмов словесной борьбы" tabindex="0" set:html={marked.parse(material)} />
+    </article>}
+   {material&&part!=='techniques'&&<article class="prose shss-text" set:html={marked.parse(material)} />}
    {part==='comic'&&ready(lessonNumber,part)&&
     <><div class="article-actions"><button class="print" data-print>{t.print}</button></div>{lessonNumber===5?<ShssComic lang={lang}/>:<ShssComicSeries lang={lang} lesson={lessonNumber}/>}</>}
    {!ready(lessonNumber,part)&&
@@ -142,7 +150,7 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
 .shss-status{color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:auto}
 .shss-status-ready{color:var(--accent);font-weight:700}
 .shss-arrow,.shss-open{font-size:.83rem;color:var(--accent);align-self:flex-end}
-.shss-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shss-parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .shss-part{min-height:190px;padding:25px}.shss-part h2{font-size:1.4rem;margin:10px 0 5px}
 .shss-notice{max-width:840px;margin:30px 0;border:1px dashed var(--line);border-radius:14px;padding:26px;color:var(--muted);background:var(--surface)}
 .shss-notice p{margin-bottom:14px}.shss-notice p:last-child{margin-bottom:0}
@@ -155,8 +163,15 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
 .shss-text :global(h3){font-size:1.17rem;margin-top:23px}
 .shss-text :global(p){line-height:1.75}
 .shss-text :global(li){margin-bottom:9px}.shss-text :global(details){border:1px solid var(--line);padding:17px;border-radius:12px;margin-top:25px;background:var(--soft)}.shss-text :global(summary){cursor:pointer;font-weight:700;color:var(--accent)}
+.shss-techniques{max-width:none}
+.shss-table-scroll{overflow-x:auto;margin-top:24px}
+.shss-table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.shss-table-scroll :global(table){width:100%;min-width:660px;border-collapse:collapse;font-size:.95rem;line-height:1.5}
+.shss-table-scroll :global(th),.shss-table-scroll :global(td){border:1px solid var(--line);padding:12px;text-align:left;vertical-align:top}
+.shss-table-scroll :global(th){background:var(--soft)}
+.shss-table-scroll :global(td:first-child){width:26%}
 .shss-bottom{display:flex;gap:12px;margin:34px 0;flex-wrap:wrap}
-@media(max-width:900px){.shss-lessons{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.shss-lessons{grid-template-columns:repeat(3,1fr)}.shss-parts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.shss-lessons{grid-template-columns:repeat(2,minmax(0,1fr))}.shss-parts{grid-template-columns:1fr}.shss-summary{display:block}.shss-summary strong{display:block;margin-bottom:10px}.shss-lesson{padding:15px}.shss-card-title{min-height:50px}}
 @media(max-width:400px){.shss-lessons{gap:9px}.shss-lesson{padding:12px}.shss-card-title{font-size:.95rem}}
 @media print{.shss-tabs,.shss-bottom,.article-actions{display:none}.shss-text{border:0;padding:0;max-width:none}.shss-lesson,.shss-part{box-shadow:none;break-inside:avoid}}
