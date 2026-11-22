@@ -29,7 +29,7 @@ try { const v=localStorage.getItem('kotik-theme')||'system'; document.documentEl
 <select id="language" aria-label="Language / Язык / Jazyk" data-base={base} data-route={route}>{languages.map(l=><option value={l} selected={l===lang}>{{ru:'Русский',en:'English',cs:'Čeština'}[l]}</option>)}</select>
 <select id="theme" aria-label={t.theme}>{['system','light','dark'].map((v,i)=><option value={v}>{t.themes[i]}</option>)}</select>
 </div></div>
-<div class="utility"><span>{t.level}</span><form class="search" action={href('search')} role="search"><input name="q" aria-label={t.searchLabel} placeholder={t.search}/><button type="submit">{t.searchLabel} ↗</button></form></div>
+<div class="utility"><small class="site-motto" lang="ru">От плода уст человека наполняется чрево его; произведением уст своих он насыщается. [Притчи Соломона 18:21]</small><form class="search" action={href('search')} role="search"><input name="q" aria-label={t.searchLabel} placeholder={t.search}/><button type="submit">{t.searchLabel} ↗</button></form></div>
 </div></header>
 <main id="main" class="wrap"><slot/></main>
 <footer><div class="wrap footer-inner"><a class="brand" href={href()}><img src={`${base}/favicon.svg`} width="38" height="38" alt=""/><span><strong>{t.name}</strong><small>{t.subtitle}</small></span></a><div><p>{t.footer}</p><p>{t.privacy}</p></div></div></footer>
