@@ -35,15 +35,44 @@ const link=(p='')=>root+(p?p+'/':'');
 const original=(p='')=>base+'/ru/shss/'+(p?p+'/':'');
 const route='shss'+(segments?'/'+segments:'');
 const i18n={
- ru:{name:'Школа спокойной силы',short:'ШСС',overview:'Программа из 28 уроков',intro:'Курс состоит из 28 уроков, а не из 28 дней. Занятия проходят в удобном темпе. Каждый урок имеет текстовую часть, комикс и контрольную работу.',lesson:'Урок',ready:'Материал опубликован',draft:'Материал готовится',title5:'Спокойное лицо — уверенный голос',6:'Пауза перед ответом',7:'Как закончить неприятный разговор',8:'Когда лучше промолчать',9:'Моё мнение имеет право быть',10:'Как сказать «Не разговаривай со мной так»',go:'Открыть урок',back:'Все 28 уроков',parts:['Текст урока','Комикс','Контрольная работа'],summary:'Материалы урока',notice:'Эта страница создана. Учебный материал будет добавлен после подготовки и проверки взрослым наставником.',testNotice:'Отдельная контрольная работа ещё не подготовлена. Краткий блиц-опрос доступен в тексте урока 5.',other:'Все материалы этого урока пока готовятся.',translation:'Перевод этого материала ещё не подготовлен. Оригинал доступен на русском языке.',original:'Открыть русский оригинал',print:'Печатать комикс',safety:'Безопасность важнее спора: при повторяющейся травле или угрозах необходимо обратиться к взрослому.',read:'Читать',open:'Открыть'},
+ ru:{name:'Школа спокойной силы',short:'ШСС',overview:'Программа из 28 уроков',intro:'Курс состоит из 28 уроков, а не из 28 дней. Занятия проходят в удобном темпе. Каждый урок имеет текстовую часть, комикс и контрольную работу.',lesson:'Урок',ready:'Материал опубликован',draft:'Материал готовится',title5:'Спокойное лицо — уверенный голос',go:'Открыть урок',back:'Все 28 уроков',parts:['Текст урока','Комикс','Контрольная работа'],summary:'Материалы урока',notice:'Эта страница создана. Учебный материал будет добавлен после подготовки и проверки взрослым наставником.',testNotice:'Отдельная контрольная работа ещё не подготовлена. Краткий блиц-опрос доступен в тексте урока 5.',other:'Все материалы этого урока пока готовятся.',translation:'Перевод этого материала ещё не подготовлен. Оригинал доступен на русском языке.',original:'Открыть русский оригинал',print:'Печатать комикс',safety:'Безопасность важнее спора: при повторяющейся травле или угрозах необходимо обратиться к взрослому.',read:'Читать',open:'Открыть'},
  en:{name:'School of Calm Strength',short:'SCS',overview:'A 28-lesson course',intro:'The course consists of 28 lessons, not 28 days. Lessons can be taken at a comfortable pace. Each has a text section, a comic and a knowledge check.',lesson:'Lesson',ready:'Available',draft:'Coming soon',title5:'Calm face, confident voice',go:'Open lesson',back:'All 28 lessons',parts:['Lesson text','Comic','Knowledge check'],summary:'Lesson materials',notice:'This page has been created. Its content will be added after preparation and adult editorial review.',testNotice:'A separate knowledge check has not yet been prepared.',other:'All materials for this lesson are in preparation.',translation:'The translation of this material is not yet available. The original is in Russian.',original:'Open Russian original',print:'Print comic',safety:'Safety comes first. Seek adult help in case of repeated bullying or threats.',read:'Read',open:'Open'},
  cs:{name:'Škola klidné síly',short:'ŠKS',overview:'Kurz o 28 lekcích',intro:'Kurz tvoří 28 lekcí, nikoli 28 dnů. Tempo si lze zvolit. Každá lekce má text, komiks a ověřovací úkol.',lesson:'Lekce',ready:'Zveřejněno',draft:'Připravuje se',title5:'Klidná tvář, jistý hlas',go:'Otevřít lekci',back:'Všech 28 lekcí',parts:['Text lekce','Komiks','Ověření znalostí'],summary:'Materiály lekce',notice:'Stránka je vytvořena. Obsah bude doplněn po přípravě a kontrole dospělým průvodcem.',testNotice:'Samostatné ověření znalostí zatím nebylo připraveno.',other:'Materiály této lekce se připravují.',translation:'Překlad tohoto materiálu zatím není k dispozici. Originál je v ruštině.',original:'Otevřít ruský originál',print:'Tisknout komiks',safety:'Bezpečí má přednost. V případě opakované šikany nebo hrozeb požádej o pomoc dospělého.',read:'Číst',open:'Otevřít'}
 };
 const t=i18n[lang];
-const titles:Record<number,string>={1:'Что такое спокойная сила',2:'Подкол — это не приказ',3:'Короткий ответ вместо оправданий',4:'Как не втягиваться в провокацию',5:'Спокойное лицо — уверенный голос'};
+const titles:Record<number,string>={1:'Что такое спокойная сила',2:'Подкол — это не приказ',3:'Короткий ответ вместо оправданий',4:'Как не втягиваться в провокацию',5:'Спокойное лицо — уверенный голос',
+ 6:'Пауза перед ответом',
+ 7:'Как закончить неприятный разговор',
+ 8:'Когда лучше промолчать',
+ 9:'Моё мнение имеет право быть',
+ 10:'Как сказать «Не разговаривай со мной так»',
+ 11:'Как спокойно сказать «нет»',
+ 12:'Как попросить о помощи',
+ 13:'Как отличить шутку, конфликт и травлю',
+ 14:'Как действовать при давлении группы',
+ 15:'Как поддержать того, кого обижают',
+ 16:'Как защитить себя в школьном чате',
+ 17:'Как рассказать о случившемся по фактам',
+ 18:'Как восстановиться после неприятного разговора',
+ 19:'Как слушать и уточнять',
+ 20:'Как выразить несогласие с доводом',
+ 21:'Как договориться о справедливых правилах',
+ 22:'Как извиниться и исправить ошибку',
+ 23:'Как реагировать на замечания',
+ 24:'Как уверенно рассказать свою мысль',
+ 25:'Как разбирать сложную ситуацию',
+ 26:'Как составить личный план поддержки',
+ 27:'Как применять навыки вместе',
+ 28:'Итоговый урок. Спокойная сила в действии',
+};
 const contentFor=(n:number,section:'text'|'test')=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='test'?'-test':'')+'.md'];
-const ready=(n:number,p:Part)=>lang==='ru'&&n>=1&&n<=10&&(p==='comic'?n<=9:Boolean(contentFor(n,p)));
-const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(titles[lessonNumber]?' — '+(lang==='ru'?titles[lessonNumber]:(lessonNumber===5?t.title5:'')):'');
+const hasMaterial=(n:number,p:Part)=>p==='comic'?n<=9:Boolean(contentFor(n,p));
+const ready=(n:number,p:Part)=>lang==='ru'&&hasMaterial(n,p);
+const hasTextAndTest=(n:number)=>ready(n,'text')&&ready(n,'test');
+const material=lessonNumber!==null&&part&&part!=='comic'&&ready(lessonNumber,part)
+ ? contentFor(lessonNumber,part)
+ : undefined;
+const title=lessonNumber===null?t.name:t.lesson+' '+lessonNumber+(lang==='ru'?' — '+titles[lessonNumber]:lessonNumber===5?' — '+t.title5:'');
 const pageTitle=part?t.parts[parts.indexOf(part)]+' — '+title:title;
 const numberId=lessonNumber===null?'':format(lessonNumber);
 const fullOriginal=original(numberId+(part?'/'+part:''));
@@ -55,10 +84,10 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
   <div class="shss-summary"><strong>{t.overview}</strong><span>{t.safety}</span></div>
   <div class="shss-lessons">
    {Array.from({length:28},(_,i)=>i+1).map(n=>
-    <a class={'shss-lesson'+(n<=10?' shss-featured':'')} href={link(format(n))}>
+    <a class={'shss-lesson'+(hasTextAndTest(n)?' shss-featured':'')} href={link(format(n))}>
      <span class="shss-index">{String(n).padStart(2,'0')}</span>
-     <span class="shss-card-title">{t.lesson} {n}{n<=10&&lang==='ru'&&<small>{titles[n]}</small>}</span>
-     <span class={'shss-status'+(n<=9&&lang==='ru'?' shss-status-ready':'')}>{n<=9&&lang==='ru'?t.ready:n===10&&lang==='ru'?'Текст и контрольная работа доступны':t.draft}</span>
+     <span class="shss-card-title">{t.lesson} {n}{lang==='ru'&&<small>{titles[n]}</small>}</span>
+     <span class={'shss-status'+(ready(n,'comic')?' shss-status-ready':'')}>{ready(n,'comic')?t.ready:hasTextAndTest(n)?'Текст и контрольная работа доступны':t.draft}</span>
      <span aria-hidden="true" class="shss-arrow">→</span>
     </a>)}
   </div>
@@ -81,23 +110,19 @@ const fullOriginal=original(numberId+(part?'/'+part:''));
       <span class="shss-open">{t.open} →</span>
      </a>)}
    </div>
-   <p class="shss-notice">{lessonNumber<=9&&lang==='ru'?'Полный комплект: текст урока, четырёхстраничный комикс, контрольная работа и практический тренинг.':lessonNumber<=10&&lang==='ru'?'Текст урока и контрольная работа с тренингом опубликованы. Полноразмерный комикс по этой теме ещё готовится.':t.notice}</p>
+   <p class="shss-notice">{lessonNumber<=9&&lang==='ru'?'Полный комплект: текст урока, четырёхстраничный комикс, контрольная работа и практический тренинг.':hasTextAndTest(lessonNumber)?'Текст урока и контрольная работа с тренингом опубликованы. Полноразмерный комикс по этой теме ещё готовится.':t.notice}</p>
   </> :
   <>
    <div class="shss-tabs" aria-label={t.summary}>
     {parts.map((p,i)=><a href={link(numberId+'/'+p)} aria-current={part===p?'page':undefined}>{t.parts[i]}</a>)}
    </div>
-   {lang==='ru'&&part==='text'&&lessonNumber<=10&&
-    <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'text'))} />}
-   {lang==='ru'&&part==='test'&&lessonNumber<=10&&
-    <article class="prose shss-text" set:html={marked.parse(contentFor(lessonNumber,'test'))} />}
-   {lang==='ru'&&lessonNumber<=9&&part==='comic'&&
+   {material&&<article class="prose shss-text" set:html={marked.parse(material)} />}
+   {part==='comic'&&ready(lessonNumber,part)&&
     <><div class="article-actions"><button class="print" data-print>{t.print}</button></div>{lessonNumber===5?<ShssComic lang={lang}/>:<ShssComicSeries lang={lang} lesson={lessonNumber}/>}</>}
-   {lang==='ru'&&lessonNumber===10&&part==='comic'&&<div class="shss-notice"><p>Четырёхстраничный иллюстрированный комикс ещё готовится. Доступны текст урока и контрольная работа с практическим тренингом.</p></div>}
-   {!(lang==='ru'&&lessonNumber<=10)&&
+   {!ready(lessonNumber,part)&&
     <div class="shss-notice">
-     <p>{lessonNumber<=10&&part!=='test'?t.translation:t.notice}</p>
-     {lessonNumber<=10&&lang!=='ru'&&<a class="button" href={fullOriginal}>{t.original} →</a>}
+     <p>{hasMaterial(lessonNumber,part)?t.translation:part==='comic'&&hasTextAndTest(lessonNumber)?'Комикс готовится. Текст урока и контрольная работа доступны.':t.notice}</p>
+     {hasMaterial(lessonNumber,part)&&<a class="button" href={fullOriginal}>{t.original} →</a>}
     </div>}
    <div class="shss-bottom"><a class="button" href={link(numberId)}>{t.summary} →</a><a class="button" href={link()}>{t.back} →</a></div>
   </>}
