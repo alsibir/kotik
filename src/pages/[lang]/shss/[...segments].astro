@@ -67,7 +67,7 @@ const titles:Record<number,string>={1:'Что такое спокойная си
  28:'Итоговый урок. Спокойная сила в действии',
 };
 const contentFor=(n:number,section:Exclude<Part,'comic'>)=>sourceFiles['../../../content/shss/ru/lesson-'+String(n).padStart(2,'0')+(section==='text'?'':'-'+section)+'.md'];
-const hasMaterial=(n:number,p:Part)=>p==='comic'?n<=15:Boolean(contentFor(n,p));
+const hasMaterial=(n:number,p:Part)=>p==='comic'?n<=17:Boolean(contentFor(n,p));
 const ready=(n:number,p:Part)=>lang==='ru'&&hasMaterial(n,p);
 const hasTextAndTest=(n:number)=>ready(n,'text')&&ready(n,'test');
 const material=lessonNumber!==null&&part&&part!=='comic'&&ready(lessonNumber,part)
