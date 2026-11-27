@@ -1,4 +1,18 @@
 ---
-const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+import SocialCard from '../components/SocialCard.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const title = 'Котик — школа спокойной силы';
+const description = '28 уроков, комиксы и практика.';
+const canonical = new URL(`${base}/ru/`, Astro.site);
 ---
-<!doctype html><html lang="ru"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta http-equiv="refresh" content={`0;url=${base}/ru/`}/><title>Котик — школа спокойной силы</title></head><body><a href={`${base}/ru/`}>Русский</a> · <a href={`${base}/en/`}>English</a> · <a href={`${base}/cs/`}>Čeština</a></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="refresh" content={`0;url=${base}/ru/`} />
+  <title>{title}</title>
+  <SocialCard title={title} description={description} url={canonical} />
+</head>
+<body><a href={`${base}/ru/`}>Русский</a> · <a href={`${base}/en/`}>English</a> · <a href={`${base}/cs/`}>Čeština</a></body>
+</html>
