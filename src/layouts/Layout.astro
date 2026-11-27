@@ -1,6 +1,7 @@
 ---
 import {ui,languages,sections,type Lang} from '../data/ui';
 import '../styles/global.css';
+import SocialCard from '../components/SocialCard.astro';
 const {lang='ru',title,route='',description}=Astro.props as {lang:Lang,title:string,route?:string,description?:string};
 const t=ui[lang];
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
@@ -14,6 +15,7 @@ const canonical=new URL(href(route),Astro.site);
 <title>{title} — {t.name}</title><meta name="description" content={description||t.intro}/>
 <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml"/>
 <link rel="canonical" href={canonical}/>
+<SocialCard title={`${title} — ${t.name}`} description={description||t.intro} url={canonical}/>
 {languages.map(l=><link rel="alternate" hreflang={l} href={new URL(`${base}/${l}/${route}${route?'/':''}`,Astro.site)}/>)}
 <script is:inline>
 try { const v=localStorage.getItem('kotik-theme')||'system'; document.documentElement.dataset.theme=v==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):v; } catch {document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
